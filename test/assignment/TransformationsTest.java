@@ -380,8 +380,9 @@ public class TransformationsTest {
         }
     }  
 
-     private ImageEffect[] allEffects() {
-        return new ImageEffect[] {
+    @Test
+    public void testJaggedArray() {
+        ImageEffect[] effects = new ImageEffect[] {
                 new Invert(),
                 new NoRed(),
                 new NoGreen(),
@@ -396,19 +397,7 @@ public class TransformationsTest {
                 new Shrink(),
                 new Threshold()
         };
-    }
- 
-    private ArrayList<ImageEffectParam> defaultParams() {
-        ArrayList<ImageEffectParam> params = new ArrayList<ImageEffectParam>();
-        params.add(new ImageEffectParam("Threshold", "Threshold value", 127, 0, 255));
-        return params;
-    }
- 
-    @Test
-    public void testJaggedArray() {
-        ImageEffect[] effects = allEffects();
 
-        assertEquals(13, effects.length);
 
         String[] expected = new String[effects.length];
         String[] actual = new String[effects.length];
@@ -424,10 +413,12 @@ public class TransformationsTest {
             expected[i] = name + " rejected the jagged array";
 
             try {
-                effects[i].apply(pixels, defaultParams());
-                actual[i] = name + " accepted the jagged array";
+                ArrayList<ImageEffectParam> params = new ArrayList<ImageEffectParam>();
+                params.add(new ImageEffectParam("Threshold", "Threshold value", 127, 0, 255));
+                effects[i].apply(pixels, params);
+                actual[i] = name + " jagged array passed ";
             } catch (ArrayIndexOutOfBoundsException e) {
-                actual[i] = name + " rejected the jagged array";
+                actual[i] = name + " jagged array failed";
             }
         }
 
@@ -436,9 +427,21 @@ public class TransformationsTest {
 
     @Test
     public void testOddWidthAndHeight() {
-        ImageEffect[] effects = allEffects();
-
-        assertEquals(13, effects.length);
+        ImageEffect[] effects = new ImageEffect[] {
+                new Invert(),
+                new NoRed(),
+                new NoGreen(),
+                new NoBlue(),
+                new RedOnly(),
+                new GreenOnly(),
+                new BlueOnly(),
+                new BlackAndWhite(),
+                new VerticalReflect(),
+                new HorizontalReflect(),
+                new Grow(),
+                new Shrink(),
+                new Threshold()
+        };
 
         String[] expected = new String[effects.length];
         String[] actual = new String[effects.length];
@@ -451,13 +454,15 @@ public class TransformationsTest {
             };
 
             String name = effects[i].getClass().getSimpleName();
-            expected[i] = name + " handled the odd width and height image";
+            expected[i] = name + " odd width/height passed";
 
             try {
-                effects[i].apply(pixels, defaultParams());
-                actual[i] = name + " handled the odd width and height image";
+                ArrayList<ImageEffectParam> params = new ArrayList<ImageEffectParam>();
+                params.add(new ImageEffectParam("Threshold", "Threshold value", 127, 0, 255));
+                effects[i].apply(pixels, params);
+                actual[i] = name + " odd width/height passed";
             } catch (Exception e) {
-                actual[i] = name + " failed on the odd width and height image";
+                actual[i] = name + " odd width/height failed";
             }
         }
 
